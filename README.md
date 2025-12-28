@@ -3,8 +3,7 @@ Date and time Range Picker 📅
 Date and time Range Picker is a user-friendly and simple package for Flutter that allows users to select a date range. It's
 designed to evolve over time, and its components are built to be reusable.
 
-![Date Time Range Picker](
-https://github.com/user-attachments/assets/143b3409-3f1c-4ae7-8af2-57c31a86a944)
+![Date Time Range Picker](https://github.com/user-attachments/assets/143b3409-3f1c-4ae7-8af2-57c31a86a944)
 
 (Isn't it beautiful?)
 
@@ -22,9 +21,9 @@ https://github.com/user-attachments/assets/143b3409-3f1c-4ae7-8af2-57c31a86a944)
 
 Add the package to your pubspec.yaml file:
 
-```yaml 
+```yaml
 dependencies:
-  date_range_picker: ^latest_version
+  date_time_range_picker: ^latest_version
 ```
 
 Then, run flutter packages get in your terminal.
@@ -67,7 +66,7 @@ range:
 
 ```dart
 showDateRangePickerDialog(
-    context: context, 
+    context: context,
     builder: datePickerBuilder
 );
 ...
