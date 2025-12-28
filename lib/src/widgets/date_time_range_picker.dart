@@ -307,6 +307,8 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
             ],
           ),
         ),
+        /////sdsdsdsdsdsdsd
+        // const TimeRange(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -332,6 +334,14 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                       labels: RangeLabels(startTime, endTime),
                       onChanged: (RangeValues newValues) {
                         timeRangeNotifier.value = newValues;
+                        if (controller.dateRange != null) {
+                          final DateTime startDateTime = _combineDateAndMinutes(
+                              controller.dateRange!.start, values.start);
+                          final DateTime endDateTime = _combineDateAndMinutes(
+                              controller.dateRange!.end, values.end);
+                          widget.onDateRangeChanged(
+                              DateRange(startDateTime, endDateTime));
+                        }
                       },
                     ),
                     Padding(
@@ -402,6 +412,20 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     return SizedBox(
       height: widget.height,
       child: child,
+    );
+  }
+
+  DateTime _combineDateAndMinutes(DateTime date, double minutes) {
+    final int totalMinutes = minutes.round();
+    final int hour = totalMinutes ~/ 60;
+    final int minute = totalMinutes % 60;
+
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      hour,
+      minute,
     );
   }
 
@@ -486,3 +510,43 @@ class EnrichedMonthWrapWidget extends StatelessWidget {
         height: theme.tileSize,
       );
 }
+
+// class TimeRange extends StatelessWidget {
+//   const TimeRange({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ;
+//   }
+
+  // DateTime _combineDateAndMinutes(DateTime date, double minutes) {
+  //   final int totalMinutes = minutes.round();
+  //   final int hour = totalMinutes ~/ 60;
+  //   final int minute = totalMinutes % 60;
+
+  //   return DateTime(
+  //     date.year,
+  //     date.month,
+  //     date.day,
+  //     hour,
+  //     minute,
+  //   );
+  // }
+
+  // String _formatMinutesToTime(double minutes) {
+  //   int totalMinutes = minutes.round();
+  //   int hour = totalMinutes ~/ 60;
+  //   int minute = totalMinutes % 60;
+
+  //   String period = hour < 12 ? 'AM' : 'PM';
+  //   int displayHour = hour % 12;
+  //   if (displayHour == 0) displayHour = 12;
+
+  //   return '$displayHour:${minute.toString().padLeft(2, '0')} $period';
+  // }
+
+  // String _formatDate(DateTime? date) {
+  //   if (date == null) return '';
+  //   return DateFormat('dd/MM/yyyy').format(date);
+  // }
+// }
