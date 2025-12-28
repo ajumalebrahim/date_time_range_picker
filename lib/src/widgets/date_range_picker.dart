@@ -147,7 +147,7 @@ class DateRangePickerWidget extends StatefulWidget {
     this.disabledDates = const [],
     this.quickDateRanges = const [],
     this.doubleMonth = true,
-    this.height = 330,
+    this.height = 440,
     this.displayMonthsSeparator = true,
     this.separatorThickness = 1,
     this.allowSingleTapDaySelection = false,
@@ -228,6 +228,8 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     allowSingleTapDaySelection: widget.allowSingleTapDaySelection,
   );
 
+  late final ValueNotifier<RangeValues> timeRangeNotifier;
+
   late final calendarController = CalendarWidgetController(
     controller: controller,
     currentMonth: widget.initialDisplayedDate ??
@@ -244,12 +246,14 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     subscription = calendarController.updateStream.listen((event) {
       if (mounted) setState(() {});
     });
+    timeRangeNotifier = ValueNotifier(const RangeValues(0, 1440));
   }
 
   @override
   void dispose() {
     super.dispose();
     subscription.cancel();
+    timeRangeNotifier.dispose();
   }
 
   @override
@@ -269,7 +273,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
           ),
         ),
         const SizedBox(
-          height: 20,
+          height: 8,
         ),
         IntrinsicHeight(
           child: Row(
@@ -302,44 +306,89 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
             ],
           ),
         ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Time Range',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            ValueListenableBuilder<RangeValues>(
+              valueListenable: timeRangeNotifier,
+              builder: (context, values, _) {
+                String startTime = _formatMinutesToTime(values.start);
+                String endTime = _formatMinutesToTime(values.end);
+
+                return Column(
+                  children: [
+                    RangeSlider(
+                      activeColor: widget.theme.selectedColor,
+                      values: values,
+                      min: 0,
+                      max: 1440, // 1440 minutes = 24 hours
+                      divisions: 96, // 15-minute intervals (1440 / 15 = 96)
+                      labels: RangeLabels(startTime, endTime),
+                      onChanged: (RangeValues newValues) {
+                        timeRangeNotifier.value = newValues;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(startTime, style: const TextStyle(fontSize: 12)),
+                          const SizedBox(width: 4),
+                          Text(endTime, style: const TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ],
     );
 
     if (widget.quickDateRanges.isNotEmpty) {
-      child = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 200,
-            decoration: BoxDecoration(
-              color: widget.theme.quickDateRangeBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(widget.theme.radius),
+      child = IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 200,
+              decoration: BoxDecoration(
+                color: widget.theme.quickDateRangeBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(widget.theme.radius),
+                ),
+              ),
+              padding: const EdgeInsets.only(right: 16),
+              child: QuickSelectorWidget(
+                selectedDateRange: controller.dateRange,
+                quickDateRanges: widget.quickDateRanges,
+                onDateRangeChanged: (dateRange) {
+                  calendarController.setDateRange(dateRange);
+                },
+                theme: widget.theme,
               ),
             ),
-            padding: const EdgeInsets.only(right: 16),
-            child: QuickSelectorWidget(
-              selectedDateRange: controller.dateRange,
-              quickDateRanges: widget.quickDateRanges,
-              onDateRangeChanged: (dateRange) {
-                calendarController.setDateRange(dateRange);
-              },
-              theme: widget.theme,
+            const VerticalDivider(
+              color: Colors.black12,
+              width: 17,
+              thickness: 1,
             ),
-          ),
-          Container(
-            color: Colors.black12,
-            width: 1,
-            height: double.infinity,
-            margin: const EdgeInsets.only(right: 16),
-          ),
-          child,
-          if (widget.quickDateRanges.isNotEmpty)
-            const SizedBox(
-              width: 16,
-            ),
-        ],
+            child,
+            if (widget.quickDateRanges.isNotEmpty)
+              const SizedBox(
+                width: 16,
+              ),
+          ],
+        ),
       );
     }
 
@@ -347,6 +396,18 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
       height: widget.height,
       child: child,
     );
+  }
+
+  String _formatMinutesToTime(double minutes) {
+    int totalMinutes = minutes.round();
+    int hour = totalMinutes ~/ 60;
+    int minute = totalMinutes % 60;
+
+    String period = hour < 12 ? 'AM' : 'PM';
+    int displayHour = hour % 12;
+    if (displayHour == 0) displayHour = 12;
+
+    return '$displayHour:${minute.toString().padLeft(2, '0')} $period';
   }
 }
 
