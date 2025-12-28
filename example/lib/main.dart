@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Date range picker example',
+      title: 'Date and time range picker example',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Date range picker example'),
+      home: const MyHomePage(title: 'Date and time range picker example'),
     );
   }
 }
@@ -39,25 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // const SizedBox(height: 100),
-              // const Text("The simple field example:"),
-              // Container(
-              //   padding: const EdgeInsets.all(8),
-              //   width: 250,
-              //   child: DateRangeField(
-              //     decoration: const InputDecoration(
-              //       label: Text("Date range picker"),
-              //       hintText: 'Please select a date range',
-              //     ),
-              //     onDateRangeSelected: (DateRange? value) {
-              //       setState(() {
-              //         selectedDateRange = value;
-              //       });
-              //     },
-              //     selectedDateRange: selectedDateRange,
-              //     pickerBuilder: datePickerBuilder,
-              //   ),
-              // ),
               const SizedBox(height: 100),
               const Text("The simple form field example:"),
               Container(
@@ -68,107 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     return "Days between ${dateRange.start.toIso8601String().substring(0, 10)} and ${dateRange.end.toIso8601String().substring(0, 10)}: ${dateRange.duration} day(s)";
                   },
                   decoration: const InputDecoration(
-                    label: Text("Date range picker"),
+                    label: Text("Date and time range picker"),
                     hintText: 'Please select a date and time range',
                   ),
                   pickerBuilder: (x, y) => datePickerBuilder(x, y, false),
                 ),
               ),
-              // const SizedBox(height: 50),
-              // const Text("The decomposed widgets example :"),
-              // const SizedBox(height: 20),
-              // const Text("The date range picker widget:"),
-              // const SizedBox(height: 20),
-              // SizedBox(
-              //   width: 576,
-              //   child: DateRangePickerWidget(
-              //     maximumDateRangeLength: 10,
-              //     minimumDateRangeLength: 3,
-              //     disabledDates: [DateTime(2023, 11, 20)],
-              //     initialDisplayedDate: DateTime(2023, 11, 20),
-              //     onDateRangeChanged: print,
-              //   ),
-              // ),
-              // const SizedBox(height: 20),
-              // const Text("The month selector:"),
-              // SizedBox(
-              //   width: 450,
-              //   child: MonthSelectorAndDoubleIndicator(
-              //     currentMonth: DateTime(2023, 11, 20),
-              //     onNext: () => debugPrint("Next"),
-              //     onPrevious: () => debugPrint("Previous"),
-              //     nextMonth: DateTime(2023, 12, 20),
-              //   ),
-              // ),
-              // const SizedBox(height: 20),
-              // const Text("A button to open the picker:"),
-              // TextButton(
-              //   onPressed: () => showDateRangePickerModalDialog(
-              //     context: context,
-              //     builder: datePickerBuilder,
-              //   ).then((value) {
-              //     debugPrint("Selected date range: $value");
-              //   }),
-              //   child: const Text("Open the picker"),
-              // ),
-              // const SizedBox(height: 20),
-              // const Text("The quick dateRanges:"),
-              // SizedBox(
-              //   width: 250,
-              //   height: 100,
-              //   child: QuickSelectorWidget(
-              //     selectedDateRange: selectedDateRange,
-              //     quickDateRanges: [
-              //       QuickDateRange(
-              //         label: 'Last 3 days',
-              //         dateRange: DateRange(
-              //           DateTime.now().subtract(
-              //             const Duration(days: 3),
-              //           ),
-              //           DateTime.now(),
-              //         ),
-              //       ),
-              //       QuickDateRange(
-              //         label: 'Last 7 days',
-              //         dateRange: DateRange(
-              //           DateTime.now().subtract(
-              //             const Duration(days: 7),
-              //           ),
-              //           DateTime.now(),
-              //         ),
-              //       ),
-              //       QuickDateRange(
-              //         label: 'Last 30 days',
-              //         dateRange: DateRange(
-              //           DateTime.now().subtract(
-              //             const Duration(days: 30),
-              //           ),
-              //           DateTime.now(),
-              //         ),
-              //       ),
-              //       QuickDateRange(
-              //         label: 'Last 90 days',
-              //         dateRange: DateRange(
-              //           DateTime.now().subtract(
-              //             const Duration(days: 90),
-              //           ),
-              //           DateTime.now(),
-              //         ),
-              //       ),
-              //       QuickDateRange(
-              //         label: 'Last 180 days',
-              //         dateRange: DateRange(
-              //           DateTime.now().subtract(
-              //             const Duration(days: 180),
-              //           ),
-              //           DateTime.now(),
-              //         ),
-              //       ),
-              //     ],
-              //     onDateRangeChanged: print,
-              //     theme: kTheme,
-              //   ),
-              // ),
             ],
           ),
         ));
