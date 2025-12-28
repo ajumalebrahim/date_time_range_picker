@@ -1,6 +1,6 @@
-Date Range Picker 📅
+Date and time Range Picker 📅
 
-Date Range Picker is a user-friendly and simple package for Flutter that allows users to select a date range. It's
+Date and time Range Picker is a user-friendly and simple package for Flutter that allows users to select a date range. It's
 designed to evolve over time, and its components are built to be reusable.
 
 ![Date Time Range Picker](
