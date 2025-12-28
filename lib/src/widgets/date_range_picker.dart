@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 /// The default [CalendarTheme] used by the date range picker.
 const CalendarTheme kTheme = CalendarTheme(
@@ -338,9 +339,15 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(startTime, style: const TextStyle(fontSize: 12)),
+                          Text(
+                            '${_formatDate(controller.dateRange?.start)} $startTime',
+                            style: const TextStyle(fontSize: 12),
+                          ),
                           const SizedBox(width: 4),
-                          Text(endTime, style: const TextStyle(fontSize: 12)),
+                          Text(
+                            '${_formatDate(controller.dateRange?.end)} $endTime',
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ],
                       ),
                     ),
@@ -408,6 +415,11 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     if (displayHour == 0) displayHour = 12;
 
     return '$displayHour:${minute.toString().padLeft(2, '0')} $period';
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }
 
