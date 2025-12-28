@@ -257,6 +257,18 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     timeRangeNotifier.dispose();
   }
 
+  void _onDateChanged(DateTime date) {
+    calendarController.onDateChanged(date);
+    timeRangeNotifier.value = const RangeValues(0, 1440);
+    if (controller.dateRange != null) {
+      final DateTime startDateTime =
+          _combineDateAndMinutes(controller.dateRange!.start, 0);
+      final DateTime endDateTime =
+          _combineDateAndMinutes(controller.dateRange!.end, 1440);
+      widget.onDateRangeChanged(DateRange(startDateTime, endDateTime));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget child = Column(
@@ -281,7 +293,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
             children: [
               EnrichedMonthWrapWidget(
                 theme: widget.theme,
-                onDateChanged: calendarController.onDateChanged,
+                onDateChanged: _onDateChanged,
                 days: calendarController.retrieveDatesForMonth(),
                 delta: calendarController
                     .retrieveDeltaForMonth(widget.firstDayOfWeek),
@@ -296,7 +308,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                   ),
                 EnrichedMonthWrapWidget(
                   theme: widget.theme,
-                  onDateChanged: calendarController.onDateChanged,
+                  onDateChanged: _onDateChanged,
                   days: calendarController.retrieveDatesForNextMonth(),
                   delta: calendarController
                       .retrieveDeltaForNextMonth(widget.firstDayOfWeek),
@@ -336,9 +348,9 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                         timeRangeNotifier.value = newValues;
                         if (controller.dateRange != null) {
                           final DateTime startDateTime = _combineDateAndMinutes(
-                              controller.dateRange!.start, values.start);
+                              controller.dateRange!.start, newValues.start);
                           final DateTime endDateTime = _combineDateAndMinutes(
-                              controller.dateRange!.end, values.end);
+                              controller.dateRange!.end, newValues.end);
                           widget.onDateRangeChanged(
                               DateRange(startDateTime, endDateTime));
                         }
