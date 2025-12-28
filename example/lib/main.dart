@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_date_range_picker/flutter_date_time_range_picker.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -70,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   decoration: const InputDecoration(
                     label: Text("Date range picker"),
-                    hintText: 'Please select a date range',
+                    hintText: 'Please select a date and time range',
                   ),
                   pickerBuilder: (x, y) => datePickerBuilder(x, y, false),
                 ),

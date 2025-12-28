@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/src/models.dart';
+import 'package:flutter_date_time_range_picker/src/models.dart';
 
 /// A widget that displays a wrap of a month's worth of day tiles.
 class MonthWrapWidget extends StatelessWidget {

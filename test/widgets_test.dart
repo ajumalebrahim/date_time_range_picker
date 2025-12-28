@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

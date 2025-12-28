@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
-import 'package:flutter_date_range_picker/src/widgets/typedefs.dart';
+import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
+import 'package:flutter_date_time_range_picker/src/widgets/typedefs.dart';
 import 'package:intl/intl.dart';
 
 /// A [FormField] that integrates a tappable date range field with form

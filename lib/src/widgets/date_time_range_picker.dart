@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 /// The default [CalendarTheme] used by the date range picker.
