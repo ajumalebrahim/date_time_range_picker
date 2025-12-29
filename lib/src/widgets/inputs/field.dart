@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
-import 'package:flutter_date_time_range_picker/src/widgets/typedefs.dart';
 import 'package:intl/intl.dart';
 
 /// Signature for building a string label from a selected [DateRange].
@@ -64,7 +63,9 @@ class DateRangeField extends StatelessWidget {
   final DateRangeLabelBuilder? labelBuilder;
 
   /// Optional footer widget builder for the date picker dialog.
-  final Widget Function({DateRange? selectedDateRange})? dialogFooterBuilder;
+  final Widget Function(
+      {DateRange? selectedDateRange,
+      ValueNotifier<RangeValues>? timeRangeNotifier})? dialogFooterBuilder;
 
   /// Function that returns the actual picker widget.
   ///
@@ -92,7 +93,10 @@ class DateRangeField extends StatelessWidget {
   final Future<DateRange?> Function({
     required BuildContext widgetContext,
     required DateRangerPickerWidgetBuilder pickerBuilder,
-    Widget Function({DateRange? selectedDateRange})? dialogFooterBuilder,
+    Widget Function(
+            {DateRange? selectedDateRange,
+            ValueNotifier<RangeValues>? timeRangeNotifier})?
+        dialogFooterBuilder,
   }) showDateRangePicker;
 
   @override

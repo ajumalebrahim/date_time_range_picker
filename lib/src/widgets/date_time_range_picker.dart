@@ -76,7 +76,7 @@ class DayNamesRow extends StatelessWidget {
   /// * [lengthOfDateName] - The length of the date name to display. Defaults to 3 (e.g., "Mon").
   /// * [firstDayOfWeek] - The first day of the week, where 0 is Sunday and 6 is Saturday. Defaults to 0.
   /// * [weekDays] - The names of the days of the week to display. If null, defaults to the default week days.
-  DayNamesRow({
+  const DayNamesRow({
     Key? key,
     required this.textStyle,
     this.weekDays,
@@ -154,6 +154,7 @@ class DateRangePickerWidget extends StatefulWidget {
     this.allowSingleTapDaySelection = false,
     this.firstDayOfWeek = 0,
     this.lengthOfDateName = 3,
+    this.timeRangeNotifier,
   })  : assert(
           firstDayOfWeek >= 0 && firstDayOfWeek <= 6,
           'firstDayOfWeek must be in the range [0..6].',
@@ -213,6 +214,9 @@ class DateRangePickerWidget extends StatefulWidget {
   /// The first day of the week, where 0 is Sunday and 6 is Saturday.
   final int firstDayOfWeek;
 
+  /// An optional [ValueNotifier] to control the time range.
+  final ValueNotifier<RangeValues>? timeRangeNotifier;
+
   @override
   State<DateRangePickerWidget> createState() => DateRangePickerWidgetState();
 }
@@ -247,25 +251,17 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     subscription = calendarController.updateStream.listen((event) {
       if (mounted) setState(() {});
     });
-    timeRangeNotifier = ValueNotifier(const RangeValues(0, 1440));
+    timeRangeNotifier =
+        widget.timeRangeNotifier ?? ValueNotifier(const RangeValues(0, 1440));
   }
 
   @override
   void dispose() {
     super.dispose();
-    subscription.cancel();
-    timeRangeNotifier.dispose();
-  }
 
-  void _onDateChanged(DateTime date) {
-    calendarController.onDateChanged(date);
-    timeRangeNotifier.value = const RangeValues(0, 1440);
-    if (controller.dateRange != null) {
-      final DateTime startDateTime =
-          _combineDateAndMinutes(controller.dateRange!.start, 0);
-      final DateTime endDateTime =
-          _combineDateAndMinutes(controller.dateRange!.end, 1440);
-      widget.onDateRangeChanged(DateRange(startDateTime, endDateTime));
+    subscription.cancel();
+    if (widget.timeRangeNotifier == null) {
+      timeRangeNotifier.dispose();
     }
   }
 
@@ -293,7 +289,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
             children: [
               EnrichedMonthWrapWidget(
                 theme: widget.theme,
-                onDateChanged: _onDateChanged,
+                onDateChanged: calendarController.onDateChanged,
                 days: calendarController.retrieveDatesForMonth(),
                 delta: calendarController
                     .retrieveDeltaForMonth(widget.firstDayOfWeek),
@@ -308,7 +304,7 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                   ),
                 EnrichedMonthWrapWidget(
                   theme: widget.theme,
-                  onDateChanged: _onDateChanged,
+                  onDateChanged: calendarController.onDateChanged,
                   days: calendarController.retrieveDatesForNextMonth(),
                   delta: calendarController
                       .retrieveDeltaForNextMonth(widget.firstDayOfWeek),
@@ -321,63 +317,58 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
         ),
         /////sdsdsdsdsdsdsd
         // const TimeRange(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Time Range',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            const SizedBox(height: 8),
-            ValueListenableBuilder<RangeValues>(
-              valueListenable: timeRangeNotifier,
-              builder: (context, values, _) {
-                String startTime = _formatMinutesToTime(values.start);
-                String endTime = _formatMinutesToTime(values.end);
+        SizedBox(
+          width: widget.theme.tileSize * 7 * (widget.doubleMonth ? 2 : 1),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Time Range',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              ValueListenableBuilder<RangeValues>(
+                valueListenable: timeRangeNotifier,
+                builder: (context, values, _) {
+                  String startTime = _formatMinutesToTime(values.start);
+                  String endTime = _formatMinutesToTime(values.end);
 
-                return Column(
-                  children: [
-                    RangeSlider(
-                      activeColor: widget.theme.selectedColor,
-                      values: values,
-                      min: 0,
-                      max: 1440, // 1440 minutes = 24 hours
-                      divisions: 96, // 15-minute intervals (1440 / 15 = 96)
-                      labels: RangeLabels(startTime, endTime),
-                      onChanged: (RangeValues newValues) {
-                        timeRangeNotifier.value = newValues;
-                        if (controller.dateRange != null) {
-                          final DateTime startDateTime = _combineDateAndMinutes(
-                              controller.dateRange!.start, newValues.start);
-                          final DateTime endDateTime = _combineDateAndMinutes(
-                              controller.dateRange!.end, newValues.end);
-                          widget.onDateRangeChanged(
-                              DateRange(startDateTime, endDateTime));
-                        }
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${_formatDate(controller.dateRange?.start)} $startTime',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${_formatDate(controller.dateRange?.end)} $endTime',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ],
+                  return Column(
+                    children: [
+                      RangeSlider(
+                        activeColor: widget.theme.selectedColor,
+                        values: values,
+                        min: 0,
+                        max: 1440, // 1440 minutes = 24 hours
+                        divisions: 96, // 15-minute intervals (1440 / 15 = 96)
+                        labels: RangeLabels(startTime, endTime),
+                        onChanged: (RangeValues newValues) {
+                          timeRangeNotifier.value = newValues;
+                        },
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${_formatDate(controller.dateRange?.start)} $startTime',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${_formatDate(controller.dateRange?.end)} $endTime',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -424,20 +415,6 @@ class DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     return SizedBox(
       height: widget.height,
       child: child,
-    );
-  }
-
-  DateTime _combineDateAndMinutes(DateTime date, double minutes) {
-    final int totalMinutes = minutes.round();
-    final int hour = totalMinutes ~/ 60;
-    final int minute = totalMinutes % 60;
-
-    return DateTime(
-      date.year,
-      date.month,
-      date.day,
-      hour,
-      minute,
     );
   }
 

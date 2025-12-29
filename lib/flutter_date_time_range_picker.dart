@@ -9,3 +9,4 @@ export 'src/widgets/dialogs.dart';
 export 'src/widgets/inputs/field.dart';
 export 'src/widgets/inputs/form_field.dart';
 export 'src/widgets/quick_selector.dart';
+export 'src/widgets/typedefs.dart';

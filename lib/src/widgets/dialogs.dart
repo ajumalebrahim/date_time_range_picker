@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
-import 'package:flutter_date_time_range_picker/src/widgets/typedefs.dart';
 import 'package:intl/intl.dart';
 
 /// A function to show the dateRange picker dialog at a specific offset.
@@ -15,7 +14,10 @@ Future<DateRange?> showDateRangePickerDialogWithOffset({
   required BuildContext context,
   required DateRangerPickerWidgetBuilder builder,
   Color barrierColor = Colors.transparent,
-  Widget Function({DateRange? selectedDateRange})? footerBuilder,
+  Widget Function(
+          {DateRange? selectedDateRange,
+          ValueNotifier<RangeValues>? timeRangeNotifier})?
+      footerBuilder,
   Offset? offset,
 }) {
   return showGeneralDialog(
@@ -52,7 +54,10 @@ Future<DateRange?> showDateRangePickerModalDialog({
   required BuildContext context,
   required DateRangerPickerWidgetBuilder builder,
   Color barrierColor = Colors.transparent,
-  Widget Function({DateRange? selectedDateRange})? footerBuilder,
+  Widget Function(
+          {DateRange? selectedDateRange,
+          ValueNotifier<RangeValues>? timeRangeNotifier})?
+      footerBuilder,
 }) {
   return showDialog(
     context: context,
@@ -84,7 +89,10 @@ Future<DateRange?> showDateRangePickerDialogOnWidget({
   required DateRangerPickerWidgetBuilder pickerBuilder,
   BuildContext? context,
   Color barrierColor = Colors.transparent,
-  Widget Function({DateRange? selectedDateRange})? dialogFooterBuilder,
+  Widget Function(
+          {DateRange? selectedDateRange,
+          ValueNotifier<RangeValues>? timeRangeNotifier})?
+      dialogFooterBuilder,
   Offset delta = const Offset(0, 60),
 }) async {
   // Compute widget position on screen
@@ -117,7 +125,9 @@ class DateRangePickerDialog extends StatefulWidget {
   /// A function that builds a widget that will be used to display the footer.
   /// The selected dateRange will be passed to the footer builder. It can be null if
   /// no dateRange is selected yet.
-  final Widget Function({DateRange? selectedDateRange}) footerBuilder;
+  final Widget Function(
+      {DateRange? selectedDateRange,
+      ValueNotifier<RangeValues>? timeRangeNotifier}) footerBuilder;
 
   @override
   State<DateRangePickerDialog> createState() => _DateRangePickerDialogState();
@@ -125,6 +135,14 @@ class DateRangePickerDialog extends StatefulWidget {
 
 class _DateRangePickerDialogState extends State<DateRangePickerDialog> {
   DateRange? dateRange;
+  final ValueNotifier<RangeValues> _timeRangeNotifier =
+      ValueNotifier(const RangeValues(0, 1440));
+
+  @override
+  void dispose() {
+    _timeRangeNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,13 +178,20 @@ class _DateRangePickerDialogState extends State<DateRangePickerDialog> {
                       ),
                     ),
                   ),
-                  child: widget.builder(context, (dateRange) {
-                    setState(() {
-                      this.dateRange = dateRange;
-                    });
-                  }),
+                  child: widget.builder(
+                    context,
+                    (dateRange) {
+                      setState(() {
+                        this.dateRange = dateRange;
+                      });
+                    },
+                    _timeRangeNotifier,
+                  ),
                 ),
-                widget.footerBuilder(selectedDateRange: dateRange),
+                widget.footerBuilder(
+                  selectedDateRange: dateRange,
+                  timeRangeNotifier: _timeRangeNotifier,
+                ),
               ],
             ),
           ],
@@ -183,11 +208,13 @@ class DateRangePickerDialogFooter extends StatelessWidget {
     this.selectedDateRange,
     this.cancelText,
     this.confirmText,
+    this.timeRangeNotifier,
   });
 
   final String? cancelText;
   final String? confirmText;
   final DateRange? selectedDateRange;
+  final ValueNotifier<RangeValues>? timeRangeNotifier;
 
   @override
   Widget build(BuildContext context) {
@@ -204,12 +231,34 @@ class DateRangePickerDialogFooter extends StatelessWidget {
           ),
           TextButton(
               onPressed: () {
-                Navigator.of(context).pop(selectedDateRange);
+                if (selectedDateRange != null && timeRangeNotifier != null) {
+                  final start = _combineDateAndMinutes(
+                      selectedDateRange!.start, timeRangeNotifier!.value.start);
+                  final end = _combineDateAndMinutes(
+                      selectedDateRange!.end, timeRangeNotifier!.value.end);
+                  Navigator.of(context).pop(DateRange(start, end));
+                } else {
+                  Navigator.of(context).pop(selectedDateRange);
+                }
               },
               child: Text(
                   confirmText ?? Intl.message("Confirm", name: "confirmText"))),
         ],
       ),
+    );
+  }
+
+  DateTime _combineDateAndMinutes(DateTime date, double minutes) {
+    final int totalMinutes = minutes.round();
+    final int hour = totalMinutes ~/ 60;
+    final int minute = totalMinutes % 60;
+
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      hour,
+      minute,
     );
   }
 }

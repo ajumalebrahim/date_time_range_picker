@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_date_time_range_picker/src/models.dart';
+import 'package:flutter_date_time_range_picker/flutter_date_time_range_picker.dart';
 
-/// A function that builds a widget that will be used to display the selected date range.
+typedef DateRangeChangedCallback = void Function(DateRange? dateRange);
+typedef DayTileBuilder = Widget Function(
+  BuildContext context,
+  DayModel day,
+  CalendarTheme theme,
+  ValueChanged<DateTime> onDateChanged,
+);
+
 typedef DateRangerPickerWidgetBuilder = Widget Function(
   BuildContext context,
-  Function(DateRange? dateRange) onDateRangeChanged,
+  DateRangeChangedCallback onDateRangeChanged,
+  ValueNotifier<RangeValues> timeRangeNotifier,
 );
