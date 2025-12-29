@@ -1,6 +1,6 @@
 name: flutter_date_time_range_picker
 description: A customizable date & time range picker for Flutter, based on date_range_picker with enhancements.
-version: 0.0.6
+version: 0.0.8
 homepage: https://github.com/ajumalebrahim/date_time_range_picker
 repository: https://github.com/ajumalebrahim/date_time_range_picker
 issue_tracker: https://github.com/ajumalebrahim/date_time_range_picker/issues

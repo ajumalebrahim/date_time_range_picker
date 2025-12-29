@@ -53,7 +53,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: Text("Date and time range picker"),
                     hintText: 'Please select a date and time range',
                   ),
-                  pickerBuilder: (x, y) => datePickerBuilder(x, y, false),
+                  pickerBuilder: (context, onDateRangeChanged,
+                          timeRangeNotifier) =>
+                      datePickerBuilder(context, onDateRangeChanged,
+                          timeRangeNotifier, false),
                 ),
               ),
             ],
@@ -63,7 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget datePickerBuilder(
     BuildContext context,
-    dynamic Function(DateRange?) onDateRangeChanged, [
+    DateRangeChangedCallback onDateRangeChanged,
+    ValueNotifier<RangeValues> timeRangeNotifier, [
     bool doubleMonth = true,
   ]) =>
       DateRangePickerWidget(
@@ -115,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialDisplayedDate:
             selectedDateRange?.start ?? DateTime(2023, 11, 20),
         onDateRangeChanged: onDateRangeChanged,
+        timeRangeNotifier: timeRangeNotifier,
         height: 450,
         theme: const CalendarTheme(
           selectedColor: Colors.blue,
